@@ -98,23 +98,4 @@ func TestHandler(t *testing.T) {
 			t.Errorf("c.count = %d; want 0", c.count)
 		}
 	})
-	// t.Run("If you use `with` to add an attribute, it will only count up once.", func(t *testing.T) {
-	// 	h := slog.NewTextHandler(io.Discard, &slog.HandlerOptions{
-	// 		Level: slog.LevelDebug,
-	// 	})
-	// 	logger := slog.New(h)
-	// 	c := &c{}
-	// 	logger = logger.With("count", c)
-
-	// 	if c.count != 1 {
-	// 		t.Errorf("c.count = %d; want 1", c.count)
-	// 	}
-
-	// 	logger.Info("xxx")
-	// 	logger.Info("xxx")
-
-	// 	if c.count != 1 {
-	// 		t.Errorf("c.count = %d; want 1", c.count)
-	// 	}
-	// })
 }
