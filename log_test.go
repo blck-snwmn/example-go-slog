@@ -99,3 +99,41 @@ func TestHandler(t *testing.T) {
 		}
 	})
 }
+
+func BenchmarkSlog(b *testing.B) {
+	type lkey struct{}
+
+	h := slog.NewTextHandler(io.Discard, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})
+	logger := slog.New(h)
+	logger = logger.With("count", "xxx")
+
+	ctx := context.WithValue(context.Background(), lkey{}, logger)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		ctx.Value(lkey{}).(*slog.Logger).Info("xxx")
+	}
+}
+
+func BenchmarkHandler(b *testing.B) {
+	type vkey struct{}
+
+	h := New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}), func(ctx context.Context) slog.Attr {
+		v := ctx.Value(vkey{}).(string)
+		return slog.String("c", v)
+	})
+	logger := slog.New(h)
+
+	ctx := context.WithValue(context.Background(), vkey{}, "xxx")
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		logger.InfoContext(ctx, "xxx")
+	}
+}
