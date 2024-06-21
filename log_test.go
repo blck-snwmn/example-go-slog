@@ -103,7 +103,7 @@ func TestHandler(t *testing.T) {
 func BenchmarkSlog(b *testing.B) {
 	type lkey struct{}
 
-	h := slog.NewTextHandler(io.Discard, &slog.HandlerOptions{
+	h := slog.NewJSONHandler(io.Discard, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 	})
 	logger := slog.New(h)
@@ -121,7 +121,7 @@ func BenchmarkSlog(b *testing.B) {
 func BenchmarkHandler(b *testing.B) {
 	type vkey struct{}
 
-	h := New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{
+	h := New(slog.NewJSONHandler(io.Discard, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 	}), func(ctx context.Context) slog.Attr {
 		v := ctx.Value(vkey{}).(string)
