@@ -1,7 +1,9 @@
 package examplegoslog
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"os"
@@ -135,5 +137,31 @@ func BenchmarkHandler(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		logger.InfoContext(ctx, "xxx")
+	}
+}
+
+func TestDo(t *testing.T) {
+	var buff bytes.Buffer
+	l := slog.New(slog.NewJSONHandler(&buff, &slog.HandlerOptions{
+		Level:     slog.LevelInfo,
+		AddSource: true,
+	}))
+	slog.SetDefault(l)
+	Info(context.Background(), "xxx1", "x", "z")
+
+	var m map[string]interface{}
+	json.Unmarshal(buff.Bytes(), &m)
+
+	if m["msg"] != "xxx1" {
+		t.Errorf("msg = %v; want xxx1", m["msg"])
+	}
+	if m["level"] != slog.LevelInfo.String() {
+		t.Errorf("level = %v; want info", m["level"])
+	}
+	if m["x"] != "z" {
+		t.Errorf("x = %v; want z", m["x"])
+	}
+	if m["source"] == `{"function":"github.com/blck-snwmn/example-go-slog.TestDo","file":"/home/snowman/dev/github.com/blck-snwmn/example-go-slog/log_test.go","line":146}` {
+		t.Errorf("source = %v; want source", m["source"])
 	}
 }
